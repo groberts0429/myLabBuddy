@@ -60,15 +60,13 @@ public class myLabBuddy extends JFrame{
 			}
 			
 			public void calculateAmount(){
-				final int FW_int = Integer.parseInt(FW);
-				final int molarity_int = Integer.parseInt(molarity);
-				final int volume_int = Integer.parseInt(volume);
-				int grams = FW_int * molarity_int * volume_int;
-				JOptionPane.showMessageDialog(null, "Add " + grams + " grams of " + compound + " then bring to a final volume of " + volume + " liter(s).");
+				float FW_float = Float.parseFloat(FW);
+				float molarity_float = Float.parseFloat(molarity);
+				float volume_float = Float.parseFloat(volume);
+				float grams = FW_float * molarity_float * volume_float;
+				JOptionPane.showMessageDialog(null, "Add " + grams + " grams of " + compound + " then bring the solution to a final volume of " + volume + " liter(s).");
 			}
-			
 		}
-	
 }
 		
 	
