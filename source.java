@@ -1,19 +1,7 @@
 import javax.swing.*;
 import java.awt.event.ActionEvent;
-// 40 minutes
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
-
-public static void main(final String[] args) {
-	menu();	
-}
-
-import javax.swing.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.KeyEvent;
-
-
 
 public class myLabBuddy extends JFrame{
 	
@@ -35,13 +23,14 @@ public class myLabBuddy extends JFrame{
 			labMenuItem.setToolTipText("Calculate dry weight to add for x molar solution");
 			labMenuItem.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent event) {
-					makeAbstractSolution();
+					makeSolution mySolution = new makeSolution();
+					mySolution.getParameters();
 				}
 			});
 			tasks.add(labMenuItem);
 			menubar.add(tasks);
 			setJMenuBar(menubar);
-			setTitle("myLabBuddy - Solutions at your fingertips");
+			setTitle("myLabBuddy - Life science solutions at your fingertips");
 			setSize(700,400);
 			setLocationRelativeTo(null);
 			setDefaultCloseOperation(EXIT_ON_CLOSE);
@@ -56,8 +45,28 @@ public class myLabBuddy extends JFrame{
 	        });
 		}
 			
-		private static void makeAbstractSolution() {
-			//
+		private class makeSolution{ // at this point only concentration in terms of molarity is accepted
+			private String FW;
+			private String compound;
+			private String molarity;
+			private String volume;
+			
+			public void getParameters() {
+				FW = JOptionPane.showInputDialog("Enter the formula weight");
+				compound = JOptionPane.showInputDialog("Enter the compound name");
+				molarity = JOptionPane.showInputDialog("Enter the molarity"); 
+				volume = JOptionPane.showInputDialog("Enter the final volume in liters (e.g. 0.05 for 50 mL)");
+				calculateAmount();
+			}
+			
+			public void calculateAmount(){
+				final int FW_int = Integer.parseInt(FW);
+				final int molarity_int = Integer.parseInt(molarity);
+				final int volume_int = Integer.parseInt(volume);
+				int grams = FW_int * molarity_int * volume_int;
+				JOptionPane.showMessageDialog(null, "Add " + grams + " grams of " + compound + " then bring to a final volume of " + volume + " liter(s).");
+			}
+			
 		}
 	
 }
