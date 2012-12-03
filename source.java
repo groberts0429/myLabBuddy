@@ -3,6 +3,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.image.BufferedImage;
+import java.lang.Math;
 
 public class myLabBuddy extends JFrame{
 	BufferedImage background;
@@ -14,26 +15,30 @@ public class myLabBuddy extends JFrame{
 
 	public final void initMenu() {
 			JMenuBar menubar = new JMenuBar(); // www.clker.com/clipart-flask-icon.html
-			ImageIcon flask = new ImageIcon(getClass().getResource("/resources/flask_32x32.jpg"));
+			//ImageIcon flask = new ImageIcon(getClass().getResource("/resources/flask_32x32.jpg"));
 			ImageIcon protocol = new ImageIcon(getClass().getResource("/resources/protocolAqua_32x32.jpg"));
+			ImageIcon flask_M = new ImageIcon(getClass().getResource("/resources/flask_M_32x32.jpg"));
+			ImageIcon flask_pct = new ImageIcon(getClass().getResource("/resources/flask_pct_32x32.jpg"));
+			ImageIcon buff = new ImageIcon(getClass().getResource("/resources/buff_32x32.jpg"));
+			ImageIcon exit = new ImageIcon(getClass().getResource("/resources/exit_32x32.jpg"));
 			
 			JMenu tasks = new JMenu("Tasks");
 			tasks.setMnemonic(KeyEvent.VK_T);
 			
-			JMenuItem menuTaskMolarSolution = new JMenuItem("Make Solution - by molarity", (Icon) flask);
+			JMenuItem menuTaskMolarSolution = new JMenuItem("Make Solution - by molarity", (Icon) flask_M);
 			menuTaskMolarSolution.setMnemonic(KeyEvent.VK_S);
 			menuTaskMolarSolution.setToolTipText("Calculate dry weight to add for x molar solution");
 			menuTaskMolarSolution.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent event) {
-					MakeMolarSolution mySolution = new MakeMolarSolution("water", 1, 18, 55.55f); // inside joke - water is 55.55 molar (1000 / 18)
+					MakeMolarSolution mySolution = new MakeMolarSolution("water", 1, 18, 55.55f); // inside joke - water is 55.55 molar: (1000 / 18).
 					mySolution.getMolarParameters();
 				}
 			});
 			tasks.add(menuTaskMolarSolution);
 			
-			JMenuItem menuTaskPercentSolution = new JMenuItem("Make Solution - by percent", (Icon) flask);
+			JMenuItem menuTaskPercentSolution = new JMenuItem("Make Solution - by percent", (Icon) flask_pct);
 			menuTaskPercentSolution.setMnemonic(KeyEvent.VK_C);
-			menuTaskPercentSolution.setToolTipText("Calculate dry weight to add for x molar solution");
+			menuTaskPercentSolution.setToolTipText("Make a percent solution by weight or volume.");
 			menuTaskPercentSolution.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent event) {
 					MakePercentSolution mySolution = new MakePercentSolution("water", 1, 1, 1, 1, true);
@@ -52,6 +57,28 @@ public class myLabBuddy extends JFrame{
 				}
 			});
 			tasks.add(menuTaskProtocol);
+			
+			JMenuItem menuTaskFormulateBuffer = new JMenuItem("Formulate a Buffer", (Icon) buff);
+			menuTaskFormulateBuffer.setMnemonic(KeyEvent.VK_B);
+			menuTaskFormulateBuffer.setToolTipText("Formulate a buffer by entering pKa and [buffer].");
+			menuTaskFormulateBuffer.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent event) {
+					FormulateBuffer myBuffer = new FormulateBuffer();
+					myBuffer.getParameters();
+					myBuffer.calculateConcentration();
+				}
+			});
+			tasks.add(menuTaskFormulateBuffer);
+			
+			JMenuItem menuTaskExit = new JMenuItem("Exit", (Icon) exit);
+			menuTaskExit.setMnemonic(KeyEvent.VK_X);
+			menuTaskExit.setToolTipText("Exit this application - Happy Trails!.");
+			menuTaskExit.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent event) {
+					System.exit(0); // Happy Trails!
+				}
+			});
+			tasks.add(menuTaskExit);
 			
 			menubar.add(tasks);
 			setJMenuBar(menubar);
@@ -112,15 +139,13 @@ public class myLabBuddy extends JFrame{
 			
 			public void calculateAmount(){
 				float grams = FW * molarity * volume;
-				ImageIcon flask = new ImageIcon(getClass().getResource("/resources/flask_32x32.jpg"));
-				JOptionPane.showMessageDialog(null, "Add " + grams + " grams of " + compound + " then bring the solution to a final volume of " + volume + " liter(s).", null,JOptionPane.INFORMATION_MESSAGE, flask);
+				ImageIcon flask_M = new ImageIcon(getClass().getResource("/resources/flask_M_32x32.jpg"));
+				JOptionPane.showMessageDialog(null, "Add " + grams + " grams of " + compound + " then bring the solution to a final volume of " + volume + " liter(s).", null, JOptionPane.INFORMATION_MESSAGE, flask_M);
 			}
 		}
 		
 		public class MakePercentSolution extends MakeAbstractSolution {
 			float percent;
-			float grams;
-			float solute_volume;
 			boolean byWeight;
 			public MakePercentSolution(
 					String compound,
@@ -132,9 +157,7 @@ public class myLabBuddy extends JFrame{
 					) {
 				super(compound, vol);
 				percent = pct;
-				grams = gm;
 				volume = vol;
-				solute_volume = solute_vol;
 				byWeight = byWght;
 			}
 			
@@ -154,16 +177,40 @@ public class myLabBuddy extends JFrame{
 			}
 		
 			public void calculateAmount() {
-				ImageIcon flask = new ImageIcon(getClass().getResource("/resources/flask_32x32.jpg"));
+				ImageIcon flask_pct = new ImageIcon(getClass().getResource("/resources/flask_pct_32x32.jpg"));
 				if (byWeight){
-					grams = percent * (volume * 10f); // 1g per 100 ml = 1% w/v. Volume is in liters.
-					JOptionPane.showMessageDialog(null, "Add " + grams + " grams of " + compound + " then bring the solution to a final volume of " + volume + " liter(s).", null,JOptionPane.INFORMATION_MESSAGE, flask);
+					float grams = percent * (volume * 10f); // 1g per 100 ml = 1% w/v. Volume is in liters.
+					JOptionPane.showMessageDialog(null, "Add " + grams + " grams of " + compound + " then bring the solution to a final volume of " + volume + " liter(s).", null,JOptionPane.INFORMATION_MESSAGE, flask_pct);
 				}
 					
 				else {
-					solute_volume = percent * (volume / 100f) ; // 0.01L per 1L = 1% v/v. Volume is in liters
-					JOptionPane.showMessageDialog(null, "Add " + solute_volume + " liters of " + compound + " then add " + (volume - solute_volume) + " liter(s) of water.", null,JOptionPane.INFORMATION_MESSAGE, flask);
+					float solute_volume = percent * (volume / 100f) ; // 0.01L per 1L = 1% v/v. Volume is in liters
+					JOptionPane.showMessageDialog(null, "Add " + solute_volume + " liters of " + compound + " then add " + (volume - solute_volume) + " liter(s) of water.", null,JOptionPane.INFORMATION_MESSAGE, flask_pct);
 				}
+			}
+		}
+		
+		public class FormulateBuffer {
+			double pKa;
+			double pH;
+			double ratio;
+			float concentration; // concentration of conjugate acid + conjugate base
+			float conjAcid_concentration;
+			float conjBase_concentration;
+			public void getParameters() {
+				String pKa_string = JOptionPane.showInputDialog("Enter the pKa of the conjugate acid.");
+					pKa = Double.parseDouble(pKa_string);
+				String pH_string = JOptionPane.showInputDialog("Enter the desired buffer pH");
+					pH = Double.parseDouble(pH_string);
+				String concentration_string = JOptionPane.showInputDialog("Enter the mM concentration of the buffer solution where [buffer concentration] = [conjugate acid] + [conjugate base].)");					concentration = Float.parseFloat(concentration_string);
+			}
+			
+			public void calculateConcentration() {
+				ratio = Math.pow(10, pH - pKa); // pH is a log10 scale
+				conjBase_concentration = (float)( (ratio / (ratio + 1) ) * concentration );
+				conjAcid_concentration = concentration - conjBase_concentration;
+				ImageIcon buff_icon = new ImageIcon(getClass().getResource("/resources/buff_32x32.jpg"));
+				JOptionPane.showMessageDialog(null, "The final concentration of the conjugate acid will be " + conjAcid_concentration + "mM.\n The final concentration of the conjugate base will be " + conjBase_concentration + "mM.\n The total buffer concentration will be " + concentration + "mM.", null, JOptionPane.INFORMATION_MESSAGE, buff_icon);
 			}
 		}
 	
